@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  jiotv-proxy:
+    build: .
+    container_name: jiotv-proxy-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+    restart: unless-stopped
+    networks:
+      - jiotv-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching (recommended for production)
+  redis:
+    image: redis:7-alpine
+    container_name: jiotv-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - jiotv-network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+networks:
+  jiotv-network:
+    driver: bridge
+
+volumes:
+  redis-data:

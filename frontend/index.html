@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Speech-to-Text Transcription</title>
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="material-icons">mic</span>
+                <h2>Live Transcription</h2>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Email or Username</label>
+                    <input type="text" id="username" name="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="material-icons">login</span>
+                    Login
+                </button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <span class="material-icons">mic</span>
+                    <h1>Live Speech-to-Text</h1>
+                </div>
+                <div class="header-right">
+                    <span id="userEmail" class="user-email"></span>
+                    <button id="logoutBtn" class="btn btn-text">
+                        <span class="material-icons">logout</span>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label for="languageSelect">
+                            <span class="material-icons">language</span>
+                            Language
+                        </label>
+                        <select id="languageSelect" class="select-input">
+                            <option value="hi-IN">Hindi (हिन्दी)</option>
+                            <option value="en-IN">English (India)</option>
+                            <option value="ta-IN">Tamil (தமிழ்)</option>
+                            <option value="te-IN">Telugu (తెలుగు)</option>
+                            <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+                            <option value="ml-IN">Malayalam (മലയാളം)</option>
+                            <option value="mr-IN">Marathi (मराठी)</option>
+                            <option value="bn-IN">Bengali (বাংলা)</option>
+                            <option value="gu-IN">Gujarati (ગુજરાતી)</option>
+                            <option value="pa-IN">Punjabi (ਪੰਜਾਬੀ)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <span class="material-icons">wifi</span>
+                            Status
+                        </label>
+                        <div id="connectionStatus" class="status-indicator">
+                            <span class="status-dot status-disconnected"></span>
+                            <span class="status-text">Disconnected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recording-controls">
+                    <button id="startRecordBtn" class="btn btn-record">
+                        <span class="material-icons">radio_button_checked</span>
+                        Start Recording
+                    </button>
+                    <button id="stopRecordBtn" class="btn btn-stop hidden">
+                        <span class="material-icons">stop</span>
+                        Stop Recording
+                    </button>
+                </div>
+
+                <div id="recordingIndicator" class="recording-indicator hidden">
+                    <div class="recording-pulse"></div>
+                    <span class="material-icons">mic</span>
+                    <span>Recording in progress...</span>
+                </div>
+            </section>
+
+            <!-- Live Transcription Display -->
+            <section class="transcription-display">
+                <div class="section-header">
+                    <span class="material-icons">subtitles</span>
+                    <h2>Live Transcription</h2>
+                </div>
+                <div id="liveTranscription" class="transcription-box">
+                    <p class="placeholder">Start recording to see transcription here...</p>
+                </div>
+            </section>
+
+            <!-- File Upload Section -->
+            <section class="file-upload-section">
+                <div class="section-header">
+                    <span class="material-icons">upload_file</span>
+                    <h2>Upload Audio File</h2>
+                </div>
+                <div class="upload-container">
+                    <div class="upload-controls">
+                        <div class="control-group">
+                            <label for="uploadLanguageSelect">
+                                <span class="material-icons">language</span>
+                                Language
+                            </label>
+                            <select id="uploadLanguageSelect" class="select-input">
+                                <option value="hi-IN">Hindi (हिन्दी)</option>
+                                <option value="en-IN">English (India)</option>
+                                <option value="ta-IN">Tamil (தமிழ்)</option>
+                                <option value="te-IN">Telugu (తెలుగు)</option>
+                                <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+                                <option value="ml-IN">Malayalam (മലയാളം)</option>
+                                <option value="mr-IN">Marathi (मराठी)</option>
+                                <option value="bn-IN">Bengali (বাংলা)</option>
+                                <option value="gu-IN">Gujarati (ગુજરાતી)</option>
+                                <option value="pa-IN">Punjabi (ਪੰਜਾਬੀ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="dropZone" class="drop-zone">
+                        <span class="material-icons">cloud_upload</span>
+                        <p>Drag and drop audio file here or click to browse</p>
+                        <p class="file-info">Supported formats: WAV, MP3, M4A (Max 25MB)</p>
+                        <input type="file" id="audioFileInput" accept="audio/*" hidden>
+                        <button id="browseFileBtn" class="btn btn-primary">
+                            <span class="material-icons">folder_open</span>
+                            Browse Files
+                        </button>
+                    </div>
+
+                    <div id="uploadProgress" class="upload-progress hidden">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <p id="uploadStatus">Uploading...</p>
+                    </div>
+
+                    <div id="uploadResult" class="transcription-box hidden">
+                        <div class="result-header">
+                            <span class="material-icons">check_circle</span>
+                            <h3>Transcription Result</h3>
+                        </div>
+                        <p id="uploadTranscriptionText" class="transcription-text"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="statistics">
+                <div class="stat-card">
+                    <span class="material-icons">library_books</span>
+                    <div class="stat-content">
+                        <span class="stat-value" id="totalCount">0</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons">check_circle</span>
+                    <div class="stat-content">
+                        <span class="stat-value" id="completedCount">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons">error</span>
+                    <div class="stat-content">
+                        <span class="stat-value" id="failedCount">0</span>
+                        <span class="stat-label">Failed</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons">timer</span>
+                    <div class="stat-content">
+                        <span class="stat-value" id="totalDuration">0</span>
+                        <span class="stat-label">Minutes</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transcription History -->
+            <section class="history-section">
+                <div class="section-header">
+                    <span class="material-icons">history</span>
+                    <h2>Transcription History</h2>
+                    <button id="refreshHistoryBtn" class="btn btn-icon">
+                        <span class="material-icons">refresh</span>
+                    </button>
+                </div>
+
+                <div class="history-filters">
+                    <div class="search-box">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchInput" placeholder="Search transcriptions...">
+                    </div>
+                    <select id="statusFilter" class="select-input">
+                        <option value="">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="processing">Processing</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    <select id="languageFilter" class="select-input">
+                        <option value="">All Languages</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="en-IN">English</option>
+                        <option value="ta-IN">Tamil</option>
+                        <option value="te-IN">Telugu</option>
+                        <option value="kn-IN">Kannada</option>
+                        <option value="ml-IN">Malayalam</option>
+                        <option value="mr-IN">Marathi</option>
+                        <option value="bn-IN">Bengali</option>
+                        <option value="gu-IN">Gujarati</option>
+                        <option value="pa-IN">Punjabi</option>
+                    </select>
+                </div>
+
+                <div id="historyList" class="history-list">
+                    <div class="loading">Loading history...</div>
+                </div>
+
+                <div id="pagination" class="pagination hidden">
+                    <button id="prevPage" class="btn btn-text">
+                        <span class="material-icons">chevron_left</span>
+                        Previous
+                    </button>
+                    <span id="pageInfo">Page 1</span>
+                    <button id="nextPage" class="btn btn-text">
+                        Next
+                        <span class="material-icons">chevron_right</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>v1.0 - 2025-11-06</p>
+        </footer>
+    </div>
+
+    <!-- Transcription Detail Modal -->
+    <div id="detailModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Transcription Details</h2>
+                <button class="close-btn" onclick="closeDetailModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div id="detailContent" class="modal-body">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span class="material-icons" id="toastIcon">info</span>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

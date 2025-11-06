@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JioTV - Tamil News Channels</title>
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/jiotv-player.css">
+
+    <!-- HLS.js for m3u8 playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="material-icons">live_tv</span>
+                <h1>JioTV - Tamil News</h1>
+            </div>
+            <div class="header-right">
+                <button id="authStatusBtn" class="btn btn-sm">
+                    <span class="material-icons">info</span>
+                    Auth Status
+                </button>
+                <button id="loginBtn" class="btn btn-sm btn-primary">
+                    <span class="material-icons">login</span>
+                    Login
+                </button>
+                <span id="userInfo" class="user-info hidden"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>JioTV Authentication</h2>
+                <button class="close-modal" onclick="closeAuthModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- OTP Method -->
+                <div id="otpMethod" class="auth-method">
+                    <h3>Login with OTP</h3>
+                    <form id="otpForm">
+                        <div class="form-group">
+                            <label for="mobileNumber">Mobile Number (with country code)</label>
+                            <input type="tel" id="mobileNumber" placeholder="91XXXXXXXXXX" required>
+                        </div>
+                        <button type="button" id="sendOtpBtn" class="btn btn-primary">
+                            <span class="material-icons">send</span>
+                            Send OTP
+                        </button>
+
+                        <div id="otpInputSection" class="hidden">
+                            <div class="form-group">
+                                <label for="otpCode">Enter OTP</label>
+                                <input type="text" id="otpCode" placeholder="XXXXXX" maxlength="6" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <span class="material-icons">check</span>
+                                Verify OTP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="divider">OR</div>
+
+                <!-- Password Method -->
+                <div id="passwordMethod" class="auth-method">
+                    <h3>Login with Password</h3>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="mobilePwd">Mobile Number</label>
+                            <input type="tel" id="mobilePwd" placeholder="91XXXXXXXXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">login</span>
+                            Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div id="authMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Service Status -->
+        <div id="serviceStatus" class="status-card">
+            <span class="material-icons">circle</span>
+            <span id="statusText">Checking service...</span>
+        </div>
+
+        <!-- Video Player Section -->
+        <div class="player-section">
+            <div class="video-container">
+                <video id="videoPlayer" controls autoplay></video>
+                <div id="channelInfo" class="channel-info hidden">
+                    <h2 id="currentChannelName"></h2>
+                    <p id="currentChannelLang"></p>
+                </div>
+                <div id="loadingSpinner" class="loading-spinner hidden">
+                    <div class="spinner"></div>
+                    <p>Loading stream...</p>
+                </div>
+            </div>
+
+            <!-- Quality Selector -->
+            <div class="controls">
+                <label>Quality:</label>
+                <div class="quality-buttons">
+                    <button class="quality-btn" data-quality="auto">Auto</button>
+                    <button class="quality-btn" data-quality="high">High</button>
+                    <button class="quality-btn" data-quality="medium">Medium</button>
+                    <button class="quality-btn" data-quality="low">Low</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels List -->
+        <div class="channels-section">
+            <div class="section-header">
+                <h2>
+                    <span class="material-icons">list</span>
+                    Tamil News Channels
+                </h2>
+                <button id="refreshChannelsBtn" class="btn btn-sm">
+                    <span class="material-icons">refresh</span>
+                    Refresh
+                </button>
+            </div>
+
+            <div id="channelsList" class="channels-grid">
+                <div class="loading">Loading channels...</div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="statistics-section">
+            <h2>
+                <span class="material-icons">bar_chart</span>
+                Statistics
+            </h2>
+            <div id="statisticsContent" class="stats-grid">
+                <!-- Stats will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>v1.0 - November 6, 2025</p>
+        <p>JioTV Integration | Tamil News Channels</p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="js/jiotv-player.js"></script>
+</body>
+</html>

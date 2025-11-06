@@ -1,0 +1,473 @@
+# Pulseofpeople.com - Django Backend API
+
+> **Django REST Framework backend for the Pulseofpeople.com voter sentiment analysis platform**
+
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5.2-green.svg)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-3.16-orange.svg)](https://www.django-rest-framework.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-blue.svg)](https://supabase.com/)
+
+---
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Deployment](#deployment)
+- [API Documentation](#api-documentation)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+
+---
+
+## 🎯 Overview
+
+This is the **backend API server** for Pulseofpeople.com, a multi-tenant SaaS platform for voter sentiment analysis designed for political campaigns and organizations.
+
+**Key Capabilities:**
+- Multi-tenant architecture with complete data isolation
+- Three-tier role hierarchy (Super Admin → Admin → User)
+- Real-time notifications system
+- JWT-based authentication
+- Supabase PostgreSQL integration
+- RESTful API with comprehensive endpoints
+- Production-ready deployment configurations
+
+**Deployed Separately:**
+- Frontend Repository: React + TypeScript (deployed on separate repo)
+- Database: Supabase PostgreSQL
+
+---
+
+## ✨ Features
+
+### Core Functionality
+- 🔐 **JWT Authentication** - Secure token-based authentication with refresh tokens
+- 👥 **Multi-Tenant Architecture** - Complete data isolation between organizations
+- 🎭 **Role-Based Access Control** - Superadmin, Admin, and User roles with granular permissions
+- 🔔 **Real-Time Notifications** - Notification system with real-time updates
+- 📁 **File Management** - Upload and manage files via Supabase Storage
+- 📊 **RESTful API** - Comprehensive API endpoints for all operations
+- 🔍 **Audit Logging** - Complete activity tracking for compliance
+
+### Security
+- Row-level security via Supabase RLS
+- Password hashing and validation
+- CORS configuration
+- Environment-based settings
+- Secure file uploads
+
+---
+
+## 🛠 Tech Stack
+
+### Backend Framework
+- **Django 5.2** - Python web framework
+- **Django REST Framework 3.16** - API toolkit
+- **djangorestframework-simplejwt** - JWT authentication
+
+### Database & Storage
+- **PostgreSQL** - via Supabase Cloud
+- **Supabase Storage** - File storage
+- **Supabase Realtime** - Real-time subscriptions
+
+### Production
+- **Gunicorn** - WSGI server
+- **WhiteNoise** - Static file serving
+- **dj-database-url** - Database configuration
+
+### Development
+- **Python 3.13**
+- **python-decouple** - Environment variables
+- **psycopg2-binary** - PostgreSQL adapter
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.13+
+- PostgreSQL (via Supabase)
+- Git
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/chatgptnotes/pulseofpeople_Django.git
+cd pulseofpeople_Django
+
+# 2. Navigate to backend
+cd backend
+
+# 3. Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# 6. Run migrations
+python manage.py migrate
+
+# 7. Create superuser
+python manage.py createsuperuser
+
+# 8. Run development server
+python manage.py runserver
+```
+
+The API will be available at: **http://localhost:8000**
+
+---
+
+## 🌐 Deployment
+
+This repository is pre-configured for deployment on multiple platforms:
+
+### 🥇 Railway.app (Recommended)
+
+**Quick Deploy:**
+```bash
+npm install -g @railway/cli
+railway login
+railway init
+railway up
+```
+
+**Or use Railway Web:**
+1. Visit [railway.app](https://railway.app)
+2. Connect GitHub repository
+3. Deploy from `backend/` folder
+4. Add environment variables
+5. Deploy!
+
+**Estimated time:** 5 minutes
+
+### 🥈 Render.com
+
+1. Visit [render.com](https://render.com)
+2. New Web Service → Connect GitHub
+3. Configure:
+   - Root Directory: `backend`
+   - Build: `pip install -r requirements.txt`
+   - Start: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+4. Add environment variables
+5. Deploy
+
+### 📚 Detailed Guides
+
+See comprehensive deployment instructions:
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete deployment walkthrough
+- **[DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md)** - Quick reference
+- **[GITHUB_SETUP.md](GITHUB_SETUP.md)** - GitHub workflow and CI/CD
+
+---
+
+## 📡 API Documentation
+
+### Base URL
+```
+Development: http://localhost:8000/api
+Production: https://your-app.railway.app/api
+```
+
+### Authentication Endpoints
+```http
+POST   /api/auth/login/          # Login with credentials
+POST   /api/auth/register/       # Register new user
+POST   /api/auth/refresh/        # Refresh access token
+POST   /api/auth/logout/         # Logout user
+```
+
+### User Endpoints
+```http
+GET    /api/users/               # List all users
+POST   /api/users/               # Create new user
+GET    /api/users/{id}/          # Get user details
+PATCH  /api/users/{id}/          # Update user
+DELETE /api/users/{id}/          # Delete user
+```
+
+### Profile Endpoints
+```http
+GET    /api/profile/me/          # Get current user profile
+PATCH  /api/profile/me/          # Update current user profile
+```
+
+### Notification Endpoints
+```http
+GET    /api/notifications/                    # List notifications
+POST   /api/notifications/                    # Create notification
+PATCH  /api/notifications/{id}/mark-read/    # Mark as read
+POST   /api/notifications/mark-all-read/     # Mark all as read
+DELETE /api/notifications/{id}/              # Delete notification
+```
+
+### Health Check
+```http
+GET    /api/health/              # API health status
+```
+
+### Admin Panel
+```
+http://localhost:8000/admin/
+```
+
+### Example Request
+
+```bash
+# Login
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin@example.com",
+    "password": "yourpassword"
+  }'
+
+# Response
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "user": {
+    "id": 1,
+    "email": "admin@example.com",
+    "role": "superadmin"
+  }
+}
+```
+
+---
+
+## 🔐 Environment Variables
+
+### Required Variables
+
+```bash
+# Django Core
+SECRET_KEY=your-secret-key-min-50-chars
+DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1,your-domain.com
+USE_SQLITE=False
+
+# Supabase Database
+DB_NAME=postgres
+DB_USER=postgres.your-project-ref
+DB_PASSWORD=your-supabase-password
+DB_HOST=db.your-project-ref.supabase.co
+DB_PORT=5432
+DB_SSLMODE=require
+
+# Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_JWT_SECRET=your-jwt-secret
+
+# CORS (Add your frontend domains)
+CORS_ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:5173
+CSRF_TRUSTED_ORIGINS=https://yourdomain.com
+
+# Security (Production)
+SECURE_SSL_REDIRECT=True
+```
+
+### Generate SECRET_KEY
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+See `backend/.env.example` for all available variables.
+
+---
+
+## 📁 Project Structure
+
+```
+pulseofpeople_Django/
+├── backend/                       # Django application
+│   ├── api/                       # Main API app
+│   │   ├── models.py              # Database models
+│   │   ├── serializers.py         # DRF serializers
+│   │   ├── views/                 # API views (organized by role)
+│   │   │   ├── user/              # User endpoints
+│   │   │   ├── admin/             # Admin endpoints
+│   │   │   └── superadmin/        # Superadmin endpoints
+│   │   ├── urls/                  # URL routing
+│   │   ├── permissions/           # Custom permissions
+│   │   ├── middleware/            # Custom middleware
+│   │   ├── services/              # Business logic
+│   │   └── migrations/            # Database migrations
+│   ├── config/                    # Django configuration
+│   │   ├── settings.py            # Django settings
+│   │   ├── urls.py                # Main URL config
+│   │   ├── wsgi.py                # WSGI config
+│   │   └── asgi.py                # ASGI config
+│   ├── manage.py                  # Django management script
+│   ├── requirements.txt           # Python dependencies
+│   ├── Procfile                   # Deployment config
+│   ├── runtime.txt                # Python version
+│   ├── railway.json               # Railway config
+│   ├── render.yaml                # Render config
+│   └── .env.example               # Environment template
+├── DEPLOYMENT_GUIDE.md            # Deployment instructions
+├── DEPLOYMENT_SUMMARY.md          # Quick reference
+├── GITHUB_SETUP.md                # GitHub workflow
+├── README.md                      # This file
+└── .gitignore                     # Git ignore rules
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+python manage.py test
+
+# Run with coverage
+coverage run manage.py test
+coverage report
+
+# Run specific tests
+python manage.py test api.tests.test_authentication
+```
+
+---
+
+## 🔧 Development
+
+### Creating Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Collecting Static Files
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+### Creating Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### Running Development Server
+
+```bash
+python manage.py runserver
+```
+
+---
+
+## 🗄 Database Schema
+
+### Main Tables
+
+- `user_profiles` - Extended user information with roles
+- `organizations` - Multi-tenant organizations
+- `notifications` - User notifications
+- `uploaded_files` - File metadata
+- `permissions` - Role-based permissions
+- `audit_logs` - Activity audit trail
+
+All tables use Supabase PostgreSQL with Row Level Security (RLS) enabled.
+
+---
+
+## 🔒 Security Features
+
+- ✅ JWT-based authentication with refresh tokens
+- ✅ Password hashing (PBKDF2)
+- ✅ CORS configuration
+- ✅ Environment-based settings
+- ✅ SQL injection prevention (Django ORM)
+- ✅ XSS protection
+- ✅ CSRF protection
+- ✅ HTTPS enforcement (production)
+- ✅ Secure file uploads
+- ✅ Rate limiting (configurable)
+
+---
+
+## 📊 Performance
+
+- Gunicorn with multiple workers
+- WhiteNoise for static file serving
+- Database connection pooling
+- Query optimization with Django ORM
+- Caching (Redis - optional)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is proprietary and confidential.
+
+---
+
+## 📞 Support
+
+For issues and questions:
+- Create an issue: [GitHub Issues](https://github.com/chatgptnotes/pulseofpeople_Django/issues)
+- Email: support@pulseofpeople.com
+
+---
+
+## 🔗 Related Repositories
+
+- **Frontend**: React + TypeScript (deployed separately)
+- **Database**: Supabase PostgreSQL
+
+---
+
+## 📖 Documentation
+
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete deployment walkthrough (Railway, Render, DigitalOcean)
+- **[DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md)** - Quick start and next steps
+- **[GITHUB_SETUP.md](GITHUB_SETUP.md)** - GitHub workflow, CI/CD, collaboration
+- **[backend/README.md](backend/README.md)** - Backend-specific documentation
+
+---
+
+## 🚀 Quick Links
+
+- **Repository**: https://github.com/chatgptnotes/pulseofpeople_Django
+- **Deploy on Railway**: https://railway.app
+- **Deploy on Render**: https://render.com
+- **Supabase Dashboard**: https://supabase.com/dashboard
+
+---
+
+**Version**: 1.7.0
+**Last Updated**: 2025-11-06
+**Python**: 3.13
+**Django**: 5.2
+**Status**: Production Ready ✅
+
+---
+
+Made with ❤️ for political campaigns and organizations
