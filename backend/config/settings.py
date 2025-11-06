@@ -37,6 +37,12 @@ if not DEBUG:
         'api.pulseofpeople.com',
     ])
 
+# Always allow Railway domains
+ALLOWED_HOSTS.extend([
+    '.railway.app',
+    'pulseofpeoplenov6-production.up.railway.app',
+])
+
 
 # Application definition
 
