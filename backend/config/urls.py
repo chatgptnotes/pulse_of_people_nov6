@@ -18,8 +18,32 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+def home_view(request):
+    """Root endpoint - API info"""
+    return JsonResponse({
+        'message': 'Live Speech-to-Text API with SarvamAI',
+        'version': '1.0',
+        'endpoints': {
+            'api': '/api/',
+            'admin': '/admin/',
+            'auth': '/api/auth/login/',
+            'transcriptions': '/api/transcriptions/',
+            'websocket': f'wss://{request.get_host()}/ws/transcribe/?token=YOUR_JWT_TOKEN'
+        },
+        'features': [
+            'Live streaming transcription via WebSocket',
+            'File upload transcription via REST API',
+            'Support for 10 Indian languages',
+            'JWT authentication',
+            'Real-time audio processing'
+        ],
+        'status': 'online'
+    })
 
 urlpatterns = [
+    path('', home_view, name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
 ]

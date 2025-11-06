@@ -27,7 +27,11 @@ const WebSocketClient = {
                 return;
             }
 
-            const wsUrl = `ws://localhost:8080/ws/transcribe/?token=${token}`;
+            // Auto-detect environment: use wss:// for Railway, ws:// for localhost
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const wsProtocol = isLocalhost ? 'ws://' : 'wss://';
+            const wsHost = isLocalhost ? 'localhost:8080' : 'pulseofpeoplenov6-production.up.railway.app';
+            const wsUrl = `${wsProtocol}${wsHost}/ws/transcribe/?token=${token}`;
 
             try {
                 this.ws = new WebSocket(wsUrl);

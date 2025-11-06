@@ -4,7 +4,14 @@
  */
 
 const API = {
-    BASE_URL: 'http://localhost:8080/api',
+    // Auto-detect environment: use Railway in production, localhost in development
+    BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8080/api'
+        : 'https://pulseofpeoplenov6-production.up.railway.app/api',
+
+    API_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8080/api'
+        : 'https://pulseofpeoplenov6-production.up.railway.app/api',
 
     /**
      * Get all transcriptions with optional filters
